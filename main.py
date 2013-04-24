@@ -1,22 +1,27 @@
 from flask import Flask
 from flask import render_template
 from flask import request
+import detect_mobile
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-  return render_template('main.html')
+  page = 'main.html'
+  if detect_mobile.is_mobile:
+    page = 'mobile.html'
+  return render_template(page)
 
 @app.route("/results", methods=['POST', 'GET'])
 def results():
   words = []
   word = request.args.get('word')
   length = request.args.get('len')
-  print word, length
   if(length.isdigit()):
     length = int(length)
-    words = get(word, length)
+  else:
+    length = 0
+  words = get(word, length)
   return render_template('list.html', words=words, word=word, length=length)
 
 def cntchr(word):
@@ -50,10 +55,10 @@ def get(word, length):
       else:
         has = False
         break
-    if has and len(dic[i]) == length:
+    if has and (length == 0 or len(dic[i]) == length):
       res.append(dic[i])
   return res
 
+loadwords()
 if __name__ == "__main__":
-  loadwords()
-  app.run()
+  app.run(debug=True)
