@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route("/")
 def index():
   page = 'main.html'
-  if detect_mobile.is_mobile:
+  if detect_mobile.is_mobile == True:
     page = 'mobile.html'
   return render_template(page)
 
